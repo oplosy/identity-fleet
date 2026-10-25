@@ -1,6 +1,6 @@
 # M0 — Walking skeleton
 
-Status: proposed · 2026-10-25 · Related: [PLAN.md](../PLAN.md) §7
+Status: implemented · 2026-10-25 · Related: [PLAN.md](../PLAN.md) §7
 
 **M0 is done when** one leaver flows end to end on the simulator through
 `resolve → plan → policy → approve → apply → verify`, driven from both MCP and the
@@ -215,7 +215,11 @@ Every error has the same shape and tells the agent what to do next:
 ```
 
 M0 codes: `PERSON_NOT_FOUND`, `PLAN_NOT_FOUND`, `PLAN_NOT_APPROVED`, `PLAN_EXPIRED`,
-`PLAN_TAMPERED`, `POLICY_DENIED`.
+`PLAN_REJECTED`, `PLAN_TAMPERED`, `PLAN_NOT_PENDING`, `POLICY_DENIED`,
+`APPROVAL_REFUSED`, `APPROVAL_INVALID`, `SIGNING_FAILED`.
+
+Over MCP, the SDK prefixes the error text with `Error executing tool <name>: `. The JSON
+follows that prefix unchanged.
 
 ## 8. Audit log
 
@@ -257,9 +261,10 @@ in M1.
 ```
 src/identity_fleet/
   domain.py        Person, Account, Session, Op, Plan, Run (pydantic)
-  planner.py       derive(), diff(), plan_leaver()
+  planner.py       observe(), diff()
   policy.py        rules + evaluate()
-  executor.py      apply(), verify()
+  core.py          the write path: plan_leaver, approve, reject, apply + verify
+  config.py        wiring: IDF_HOME, adapters
   approvals.py     ssh-keygen sign/verify
   audit.py         hash-chained JSONL
   store.py         SQLite: persons, plans, approvals, runs
@@ -299,7 +304,22 @@ Scheduled (future-dated) leavers, joiner and mover, devices, certificates, async
 jobs, blast-radius budgets, `explain_access`, real authentication of the caller, and
 any real directory.
 
-## 13. Open questions for M0
+## 13. What building it taught us
+
+- **Count signatures, not the status field.** The plan hash does not cover `status`, so
+  someone with access to the state store could set a plan to `approved`. `apply` therefore
+  re-verifies every stored approval signature and counts distinct valid approvers.
+- **Plan and approve were merged into `core.py`.** Separate executor/approvals-flow modules
+  added indirection without a second caller.
+- **MCP tools are `async`.** The SDK runs sync tools in worker threads, and a SQLite
+  connection cannot be shared across threads. Async tools run on the event-loop thread,
+  which also serialises calls.
+- **A missing session counts as `already_satisfied`.** Absence is exactly what
+  `terminate_session` wants.
+- **Python 3.12** is pinned for now, because `uv` could not install 3.13 on the dev machine.
+  Nothing in the code needs 3.13.
+
+## 14. Open questions for M0
 
 - Is `ssh-keygen -Y` signing smooth enough on Windows for approvers, or should M0 use
   the OS-user fallback?

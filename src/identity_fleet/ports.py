@@ -1,0 +1,16 @@
+"""Interfaces the core uses to reach real systems. Adapters implement them."""
+
+from typing import Protocol
+
+from .domain import Account, Session
+
+
+class Directory(Protocol):
+    def find_accounts(self, employee_id: str) -> list[Account]: ...
+    def disable_account(self, account_id: str) -> None: ...
+    def remove_group(self, account_id: str, group: str) -> None: ...
+
+
+class Hosts(Protocol):
+    def list_sessions(self, account_id: str) -> list[Session]: ...
+    def terminate_session(self, session_id: str) -> None: ...

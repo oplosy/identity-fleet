@@ -6,7 +6,29 @@ When someone joins, changes team or leaves, their accounts, devices, certificate
 sessions have to change with them: on time, completely, and with proof. IdentityFleet
 makes that lifecycle correct, auditable, and safe to hand to an agent over MCP.
 
-> **Status:** design phase. Nothing here is production-ready yet. See [the plan](docs/PLAN.md).
+> **Status:** M0 walking skeleton. A leaver runs end to end on a simulator via CLI and MCP.
+> Nothing here is production-ready yet. See [the plan](docs/PLAN.md).
+
+## Try it (simulator)
+
+Requires [uv](https://docs.astral.sh/uv/) and OpenSSH (`ssh-keygen`).
+
+```bash
+uv sync
+export IDF_HOME=.idf
+mkdir -p $IDF_HOME
+ssh-keygen -t ed25519 -f $IDF_HOME/approver.key -N ""
+echo "emre.d $(cut -d' ' -f1,2 $IDF_HOME/approver.key.pub)" > $IDF_HOME/allowed_signers
+uv run idf sim reset
+uv run idf plan leaver E1004 --reason Resigned --on-behalf-of selin.k   # note the plan_id
+uv run idf plan approve <plan_id> --key $IDF_HOME/approver.key
+uv run idf apply <plan_id>
+uv run idf audit verify
+```
+
+Use it from an MCP client by running `uv run idf mcp` (stdio). The server exposes
+`resolve_person`, `get_identity`, `plan_leaver`, `get_plan` and `apply_plan`. There is
+no approve tool. Tests: `uv run pytest`.
 
 ---
 

@@ -1,0 +1,22 @@
+{
+  "tier0_groups": ["Domain Admins", "Enterprise Admins", "Schema Admins"],
+  "persons": [
+    {"employee_id": "E0001", "given_name": "Break", "surname": "Glass", "department": "IT", "tags": ["break_glass"]},
+    {"employee_id": "E1001", "given_name": "Ayşe", "surname": "Yılmaz", "department": "Marketing"},
+    {"employee_id": "E1002", "given_name": "Ayşe", "surname": "Yılmaz", "department": "Finance"},
+    {"employee_id": "E1003", "given_name": "Mehmet", "surname": "Öztürk", "department": "IT"},
+    {"employee_id": "E1004", "given_name": "Şule", "surname": "Çelik", "department": "Sales"}
+  ],
+  "accounts": [
+    {"account_id": "dir:breakglass01", "login": "breakglass01", "owner": "E0001", "groups": ["Domain Admins"]},
+    {"account_id": "dir:ayse.yilmaz", "login": "ayse.yilmaz", "owner": "E1001", "groups": ["GG-AllStaff", "GG-Marketing"]},
+    {"account_id": "dir:ayse.yilmaz2", "login": "ayse.yilmaz2", "owner": "E1002", "groups": ["GG-AllStaff", "GG-Finance"]},
+    {"account_id": "dir:mehmet.ozturk", "login": "mehmet.ozturk", "owner": "E1003", "groups": ["Domain Admins", "GG-AllStaff", "GG-IT"]},
+    {"account_id": "dir:sule.celik", "login": "sule.celik", "owner": "E1004", "groups": ["GG-AllStaff", "GG-Sales"]}
+  ],
+  "sessions": [
+    {"session_id": "lnx-03/4211", "host": "lnx-03", "account_id": "dir:ayse.yilmaz", "started_at": "2026-10-25T07:58:00Z"},
+    {"session_id": "lnx-03/4302", "host": "lnx-03", "account_id": "dir:sule.celik", "started_at": "2026-10-25T08:12:00Z"},
+    {"session_id": "win-07/2", "host": "win-07", "account_id": "dir:sule.celik", "started_at": "2026-10-25T08:30:00Z"}
+  ]
+}

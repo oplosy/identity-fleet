@@ -1,0 +1,26 @@
+[project]
+name = "identity-fleet"
+version = "0.1.0"
+description = "Identity and device lifecycle for Windows and Linux, built to be safely operated by AI agents"
+authors = [
+    { name = "Contictus", email = "mesutokul4@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "mcp>=2.3.0",
+]
+
+[project.scripts]
+idf = "identity_fleet.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.12.8,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
