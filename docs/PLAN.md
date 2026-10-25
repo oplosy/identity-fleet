@@ -85,8 +85,9 @@ We split decisions by how expensive they are to reverse.
 | D4 | **Desired state + reconciliation**, not fire-and-forget commands. | Detects drift and makes retries and partial failures tractable. |
 | D5 | **Agents get typed, intent-level tools. Reads may be flexible (allow-listed LDAP queries, JEA, diagnostic commands); writes are never free-form.** | Keeps policy meaningful and limits the blast radius of prompt injection. |
 | D6 | **Audit log is append-only and records requester, agent, approver and plan hash.** | Required for both compliance and agent accountability. |
-| D7 | **The system is treated as a Tier 0 asset.** Least-privilege delegated service accounts, never Domain Admin. | It can change who has access to everything. |
+| D7 | **The system is treated as a Tier 0 asset.** Least-privilege delegated service accounts, never Domain Admin. Changes to Tier 0 subjects are planned and verified by IdentityFleet but executed by a human ([M1 §5](design/M1-real-directory.md)). | It can change who has access to everything. |
 | D8 | **Stable identity anchor is an immutable `employeeId`**, never a name. | Name collisions and renames are normal. |
+| D9 | **No tool output, audit entry or error ever contains a secret.** Initial passwords are random and never revealed. | Anything an agent sees may leak through its context. |
 
 ### 4.2 Two-way doors (current best guess, revisit freely)
 
@@ -203,7 +204,7 @@ Each milestone says what must be **true**, not which tasks to do. Order may chan
 | Milestone | True when | Questions it answers |
 |---|---|---|
 | **M0 Walking skeleton** ([design](design/M0-walking-skeleton.md)) | One leaver flows end to end on the simulator through plan → approve → apply → verify, from both CLI and MCP, with an audit record | Does the core contract feel right? Is the tool surface usable by an agent? |
-| **M1 Real directory** | Contract tests pass on Samba AD in CI; joiner, mover and leaver work on it | Is the simulator faithful? Is the LDAP library adequate? |
+| **M1 Real directory** ([design](design/M1-real-directory.md)) | Contract tests pass on Samba AD in CI; joiner, mover and leaver work on it | Is the simulator faithful? Is the LDAP library adequate? |
 | **M2 Linux and sessions** | A domain-joined Linux host loses access and sessions within a measured SLA, cache included | What SLA can we honestly claim? |
 | **M3 Agent** | Reference agent passes the eval suite, including injection cases, with published results | Is the governance model enough under adversarial input? |
 | **M4 Windows, devices, PKI** | Windows lab, device enrolment, short-lived certs and SSH CA in the leaver path | Do short-lived credentials simplify offboarding as hoped? |
