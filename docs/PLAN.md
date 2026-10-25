@@ -165,7 +165,9 @@ Design rules for this surface:
 - Tool annotations (`readOnlyHint`, `destructiveHint`) set honestly.
 - Errors are machine-readable with a next step (`USER_AMBIGUOUS` + candidates,
   `HOST_UNREACHABLE` + `retry_after`, `POLICY_DENIED` + rule id).
-- Idempotency keys on every plan and apply.
+- Idempotent by construction: plans are content-addressed (`plan_id` = hash of
+  intent + ops), so retries return the same plan without idempotency keys. See
+  [M0 design](design/M0-walking-skeleton.md).
 - OpenTelemetry trace context from MCP `_meta` flows into the audit log.
 
 ## 6. Codebase shape (hypothesis)
@@ -200,7 +202,7 @@ Each milestone says what must be **true**, not which tasks to do. Order may chan
 
 | Milestone | True when | Questions it answers |
 |---|---|---|
-| **M0 Walking skeleton** | One leaver flows end to end on the simulator through plan → approve → apply → verify, from both CLI and MCP, with an audit record | Does the core contract feel right? Is the tool surface usable by an agent? |
+| **M0 Walking skeleton** ([design](design/M0-walking-skeleton.md)) | One leaver flows end to end on the simulator through plan → approve → apply → verify, from both CLI and MCP, with an audit record | Does the core contract feel right? Is the tool surface usable by an agent? |
 | **M1 Real directory** | Contract tests pass on Samba AD in CI; joiner, mover and leaver work on it | Is the simulator faithful? Is the LDAP library adequate? |
 | **M2 Linux and sessions** | A domain-joined Linux host loses access and sessions within a measured SLA, cache included | What SLA can we honestly claim? |
 | **M3 Agent** | Reference agent passes the eval suite, including injection cases, with published results | Is the governance model enough under adversarial input? |
